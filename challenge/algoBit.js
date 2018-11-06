@@ -31,7 +31,13 @@ async function readFile(){
 // Complete this function, so we can return array of object from our csv file
 // use async/await
 async function parseCSV(data){
+  return new Promise(function(resolve, reject) {
+    readFile()
+    .then(data)=>{
+      return csv().fromString(data.data)
+    }
 
+  });
 }
 
 
