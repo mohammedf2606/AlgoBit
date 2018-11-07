@@ -52,8 +52,8 @@ async function parseCSV(data){
   try {
     return csv().fromString(data).then((csvToObj)=>{
       const allTimes = generateTime(csvToObj);
-      const bitstampData = generateBitstamp(csvToObj);
-      return {allTimes, bitstampData};
+      const allPrices = generateBitstamp(csvToObj);
+      return {allTimes, allPrices};
     });
   } catch (error) {
     console.log(error);
@@ -68,8 +68,23 @@ async function AlgoBit(){
   // .... Complete this function
   const parsed = await parseCSV(data);
   // console.log({parsed});
-  const buy = function()
-
+  // console.log(parsed.allPrices);
+  try {
+    for(let i = 0; i < parsed.allTimes.length; i++){
+      console.log('Current price of Bitcoin is: £', (parsed.allPrices[i]).toFixed(2));
+      if(i != 0){
+        const basePrice = parsed.allPrices[i-1];
+        if(parsed.allPrices[i]+2 > basePrice){
+          console.log('Buying some bitcoins');
+        }
+        else if (parsed.allPrices[i]-2 < basePrice) {
+          console.log('Selling them bitcoins');
+        }
+      }
+    }
+  } catch(error){
+    console.error(error);
+  }
 }
 
 
