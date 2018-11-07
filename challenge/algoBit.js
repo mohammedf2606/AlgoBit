@@ -1,5 +1,5 @@
 const fs = require('fs');
-const csv=require('csvtojson')
+const csv = require('csvtojson')
 /*
                       ------ AlgoBit Challenge ------
 
