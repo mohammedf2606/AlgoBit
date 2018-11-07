@@ -1,6 +1,9 @@
 const fs = require('fs');
 const csv = require('csvtojson')
 
+let balance = 100;
+let bitcoin = 0;
+
 /*
                       ------ AlgoBit Challenge ------
 
@@ -16,13 +19,20 @@ const csv = require('csvtojson')
 
 */
 
+
+// Basic sleep function
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 function generateTime(data){
   // typeof data = array
   const times = [];
   for(let i = 0; i < data.length; i++){
     times.push(data[i].Time);
   }
-  return times;// some data
+  return times; // some data
 }
 
 function generateBitstamp(data){
@@ -31,7 +41,7 @@ function generateBitstamp(data){
   for(let i = 0; i < data.length; i++){
     bitstampData.push(data[i].bitstamp);
   }
-  return bitstampData;// some data
+  return bitstampData; // some data
 }
 
 // This module can read file with a path from the root of the project.
@@ -61,27 +71,57 @@ async function parseCSV(data){
 }
 
 
+async function invest(currentPrice){
+  try{
+    let invest = balance * 0.75;
+    balance *= 0.25;
+    var bought = invest / currentPrice;
+    bitcoin += bought;
+    // console.log('Buying ', bought, 'bitcoins');
+    // await sleep(100);
+    // console.log('You now have ', bitcoin, 'bitcoins');
+    // await sleep(100);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+// Uncomment logs for smaller test cases
 async function AlgoBit(){
-  let balance = 100;
-  const data = await readFile();
-  // console.log({data});
-  // .... Complete this function
+  const data = await readFile()
   const parsed = await parseCSV(data);
-  // console.log({parsed});
-  // console.log(parsed.allPrices);
+  console.log('\nStart time: ', parsed.allTimes[0]);
   try {
-    for(let i = 0; i < parsed.allTimes.length; i++){
-      console.log('Current price of Bitcoin is: £', (parsed.allPrices[i]).toFixed(2));
+    for(let i = 0; i < parsed.allPrices.length; i++){
+      const currentPrice = parseFloat(parsed.allPrices[i]);
+      // console.log('\nCurrent Time: ', parsed.allTimes[i])
+      // console.log('Current price of Bitcoin is: $', currentPrice.toFixed(2));
+      // console.log('You currently have $', parseFloat(balance).toFixed(2));
+      // await sleep(100);
       if(i != 0){
         const basePrice = parsed.allPrices[i-1];
-        if(parsed.allPrices[i]+2 > basePrice){
-          console.log('Buying some bitcoins');
+        if (currentPrice - 0.1 < basePrice) {
+          // console.log('Selling', bitcoin, 'bitcoins');
+          // await sleep(100);
+          balance += bitcoin * currentPrice;
+          bitcoin = 0;
         }
-        else if (parsed.allPrices[i]-2 < basePrice) {
-          console.log('Selling them bitcoins');
+        if (currentPrice + 1.7 > basePrice){
+          await invest(currentPrice);
+        }
+        else {
+          void(0);
         }
       }
+      else {
+        await invest(currentPrice);
+      }
     }
+    balance += bitcoin * parsed.allPrices[parsed.allPrices.length - 1];
+    console.log('\nEnd time: ', parsed.allTimes[parsed.allTimes.length - 1]);
+    console.log('\nYou ended with $', parseFloat(balance).toFixed(2));
+    console.log('That is a profit of $', parseFloat(balance - 100).toFixed(2));
   } catch(error){
     console.error(error);
   }
