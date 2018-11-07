@@ -1,5 +1,6 @@
 const fs = require('fs');
 const csv = require('csvtojson')
+
 /*
                       ------ AlgoBit Challenge ------
 
@@ -15,6 +16,23 @@ const csv = require('csvtojson')
 
 */
 
+function generateTime(data){
+  // typeof data = array
+  const times = [];
+  for(let i = 0; i < data.length; i++){
+    times.push(data[i].Time);
+  }
+  return times;// some data
+}
+
+function generateBitstamp(data){
+  // typeof data = array
+  const bitstampData = [];
+  for(let i = 0; i < data.length; i++){
+    bitstampData.push(data[i].bitstamp);
+  }
+  return bitstampData;// some data
+}
 
 // This module can read file with a path from the root of the project.
 async function readFile(){
@@ -31,22 +49,26 @@ async function readFile(){
 // Complete this function, so we can return array of object from our csv file
 // use async/await
 async function parseCSV(data){
-  return new Promise(function(resolve, reject) {
-    readFile()
-    .then(data)=>{
-      return csv().fromString(data.data)
-    }
-
-  });
+  try {
+    return csv().fromString(data).then((csvToObj)=>{
+      const allTimes = generateTime(csvToObj);
+      const bitstampData = generateBitstamp(csvToObj);
+      return {allTimes, bitstampData};
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 
 async function AlgoBit(){
   let balance = 100;
   const data = await readFile();
-  console.log({data});
+  // console.log({data});
   // .... Complete this function
-
+  const parsed = await parseCSV(data);
+  // console.log({parsed});
+  const buy = function()
 
 }
 
